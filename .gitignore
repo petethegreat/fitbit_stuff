@@ -1,1 +1,4 @@
 py36_venv/
+**venv/
+venv**/
+.*tokens.txt
