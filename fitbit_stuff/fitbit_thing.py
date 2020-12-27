@@ -23,6 +23,8 @@ class FitbitThing(object):
         self._client_id_var = "FITBIT_API_CLIENT_ID"
         self._token_file = token_file
         self._logger = logging.getLogger("fitbit_stuff.FitbitThing")
+        self._fitbit_oauth2_root = "https://www.fitbit.com/oauth2/authorize"
+        self._oauth2_callback_uri = "http://127.0.0.1:8080"
 
         #logging
         if debug:
