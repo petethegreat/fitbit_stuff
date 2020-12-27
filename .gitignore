@@ -2,3 +2,5 @@ py36_venv/
 **venv/
 venv**/
 .*tokens.txt
+*.json
+*.log
