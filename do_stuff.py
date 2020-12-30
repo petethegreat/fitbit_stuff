@@ -23,10 +23,7 @@ def do_stuff():
 
     ft = FitbitThing()
     ft.setup()
-
-
-
-
+    ft.open_authorization_page()
 
 
 if __name__ == "__main__":
