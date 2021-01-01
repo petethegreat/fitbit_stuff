@@ -6,7 +6,7 @@ from fitbit_stuff.fitbit_thing import FitbitThing
 
 def do_stuff():
     # logging - https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook
-    logger = logging.getLogger("fitbit_stuff")
+    logger = logging.getLogger("")
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler("./fitbit.log")
     fh.setLevel(logging.DEBUG)
@@ -23,7 +23,7 @@ def do_stuff():
 
     ft = FitbitThing()
     ft.setup()
-    ft.open_authorization_page()
+    ft.get_authorization_code()
 
 
 if __name__ == "__main__":

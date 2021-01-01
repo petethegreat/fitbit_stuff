@@ -5,3 +5,4 @@ venv**/
 *.json
 *.log
 setup_env.sh
+**/__pycache__

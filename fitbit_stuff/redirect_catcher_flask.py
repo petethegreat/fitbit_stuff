@@ -1,25 +1,41 @@
 # some flask stuff to catch the redirect will go here
 
 import flask
+from flask import request
 import logging
 from flask_api import FlaskAPI
 
+logger = logging.getLogger(__name__)
 
+def stop_app():
+    pass
 
 def setup_app():
     app = FlaskAPI("flask_oauth2_catcher")
+    logger.debug("setting up app")
 
     @app.route("/")
-    def hello():
-        return "hello, flask app is working"
-
+    def get_auth_code():
+        logger.debug("request received")
+        the_auth_code = request.args.get("code", None)
+        the_state = request.args.get("state", None)
+        if the_auth_code:
+            auth_code = the_auth_code
+            logger.debug("auth code parsed")
+            return f"the auth code = \"{the_auth_code}\""
+        else:
+            logger.debug("auth code not retrieved")
+            return "could not parse authorisation code"
     return app
 
 
 def start_catcher():
+    auth_code = None
     app = setup_app()
+    # app.run should happen in a thread
+    # the interval/logging stuff can happen here ("main thread")
     app.run(port=8080)
-
+    return auth_code
 
 # def await_callback(*args,**kwargs):
 #     logger = logging.getLogger("fitbit_stuff.await_callback")

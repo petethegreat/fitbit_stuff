@@ -4,7 +4,7 @@ import logging
 import requests
 from requests_oauthlib import OAuth2Session
 import webbrowser
-
+from .redirect_catcher_flask import start_catcher
 
 # with client keys:
 #     authorisation code grant flow:
@@ -67,7 +67,7 @@ class FitbitThing(object):
         self.get_client_keys()
     ###########################
 
-    def open_authorization_page(self):
+    def get_authorization_code(self):
         self.validate_client_keys()
         scope = ["activity", "heartrate", "location", "sleep"]
 
@@ -85,4 +85,9 @@ class FitbitThing(object):
         self._logger.debug("opening a browser window")
         webbrowser.open_new(authorization_url)
         self._logger.debug("done opening browser")
+        a_code = start_catcher()
+        msg = "a_code obtained" if a_code else "did not get a_code"
+        self._logger.debug(msg)
+
+
         # works
