@@ -15,7 +15,7 @@ from .redirect_catcher_flask import start_catcher
 #     https://dev.fitbit.com/build/reference/web-api/oauth2/#implicit-grant-flow
 #     login/redirect required each time(?)
 
-class FitbitThing(object):
+class FitbitAuthenticator(object):
     def __init__(self, token_file="./tokens.json", debug=True):
         self._tokens = None
         self._oauth2_client_key = None
@@ -85,9 +85,10 @@ class FitbitThing(object):
         self._logger.debug("opening a browser window")
         webbrowser.open_new(authorization_url)
         self._logger.debug("done opening browser")
-        a_code = start_catcher()
-        msg = "a_code obtained" if a_code else "did not get a_code"
+        acode_state = start_catcher(timeout=12.0)
+        msg = "a_code obtained" if acode_state else "did not get a_code"
         self._logger.debug(msg)
 
-
+  # - add docstrings
+  # - other pep8
         # works

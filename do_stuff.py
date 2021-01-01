@@ -2,13 +2,13 @@
 import logging
 
 
-from fitbit_stuff.fitbit_thing import FitbitThing
+from fitbit_stuff.fitbit_authenticator import FitbitAuthenticator
 
 def do_stuff():
     # logging - https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook
     logger = logging.getLogger("")
     logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler("./fitbit.log")
+    fh = logging.FileHandler("./fitbit.log", mode="w")
     fh.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
@@ -21,7 +21,7 @@ def do_stuff():
 
     logger.debug("logging test")
 
-    ft = FitbitThing()
+    ft = FitbitAuthenticator()
     ft.setup()
     ft.get_authorization_code()
 
