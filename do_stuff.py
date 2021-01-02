@@ -23,7 +23,8 @@ def do_stuff():
 
     ft = FitbitAuthenticator()
     ft.setup()
-    ft.get_authorization_code()
+    acode_state = ft.get_authorization_code()
+    td = ft.get_access_refresh_token(acode_state)
 
 
 if __name__ == "__main__":
