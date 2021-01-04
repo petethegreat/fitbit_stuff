@@ -5,6 +5,8 @@ import json
 import logging
 import webbrowser
 from typing import Tuple, Dict
+import time
+import math
 
 import requests
 from requests_oauthlib import OAuth2Session
@@ -66,7 +68,8 @@ class FitbitAuthenticator(object):
         self._oauth2_session = OAuth2Session(
             client_id=self._oauth2_client_id,
             scope=scope,
-            redirect_uri=self._oauth2_callback_uri
+            redirect_uri=self._oauth2_callback_uri,
+            token_updater=self.save_tokens
             )
 
     ###########################
@@ -123,10 +126,33 @@ class FitbitAuthenticator(object):
 
         try:
             with open(self._token_file, "r") as tfile:
-                self._tokens = json.load(tfile)
+                tokens = json.load(tfile)
+                # requests_oauthlib needs expires_in
+                # update this, based on __expires_at
+                if "__expires_at" in tokens and "expires_in" in tokens:
+                    expiry = tokens.pop("__expires_at")
+                    tokens["expires_in"] = math.floor(expiry - time.time())
+                self._tokens = tokens
+
         except IOError:
             self._logger.debug("token file not found")
+    ###########################
 
+        def save_tokens(self, tokens):
+            """save tokens"""
+            out_dict = tokens.copy()
+
+            if "expires_at" in out_dict:
+                out_dict["__expires_at"] = out_dict["expires_at"]
+            elif "expires_in" in out_dict:
+                out_dict["__expires_at"] = math.floor(time.time() + out_dict["expires_in"])
+
+            try:
+                with open(self._token_file, "w") as tfile:
+                    json.dump(out_dict,tfile)
+            except IOError as e:
+                self._logger.debug("could not write to token file")
+                raise e
     ###########################
 
     def setup(self):
