@@ -4,3 +4,6 @@ venv**/
 .*tokens.txt
 *.json
 *.log
+setup_env.sh
+**/__pycache__
+.pylint
