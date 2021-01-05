@@ -60,6 +60,23 @@ class FitbitAuthenticator(object):
             self._logger.setLevel(logging.WARNING)
     ###########################
 
+    def setup(self):
+        """load keys and tokens, authenticate if needed"""
+
+        print("setup")
+        print(__name__)
+        self._logger.info("setting up...")
+        self.load_tokens()
+        self.get_client_keys()
+        self.setup_oauth2_session()
+
+        # if we don't have access/refresh tokens handy, then authorize again
+        if not self._tokens:
+            acode = self.get_authorization_code()
+            token = self.get_access_refresh_token(acode)
+
+    ###########################
+
     def setup_oauth2_session(self):
         """Sets up the oauth2 session object
         """
@@ -69,8 +86,12 @@ class FitbitAuthenticator(object):
             client_id=self._oauth2_client_id,
             scope=scope,
             redirect_uri=self._oauth2_callback_uri,
-            token_updater=self.save_tokens
+            token_updater=self.save_tokens,
+            token=self._tokens
             )
+
+#         client = OAuth2Session(client_id, token=token, auto_refresh_url=refresh_url,
+# ...     auto_refresh_kwargs=extra, token_updater=token_saver)
 
     ###########################
 
@@ -133,36 +154,33 @@ class FitbitAuthenticator(object):
                     expiry = tokens.pop("__expires_at")
                     tokens["expires_in"] = math.floor(expiry - time.time())
                 self._tokens = tokens
+                self._logger.debug(tokens)
 
         except IOError:
             self._logger.debug("token file not found")
     ###########################
 
-        def save_tokens(self, tokens):
-            """save tokens"""
-            out_dict = tokens.copy()
+    def save_tokens(self, tokens):
+        """save tokens"""
+        out_dict = tokens.copy()
 
-            if "expires_at" in out_dict:
-                out_dict["__expires_at"] = out_dict["expires_at"]
-            elif "expires_in" in out_dict:
-                out_dict["__expires_at"] = math.floor(time.time() + out_dict["expires_in"])
+        if "expires_at" in out_dict:
+            out_dict["__expires_at"] = out_dict["expires_at"]
+        elif "expires_in" in out_dict:
+            out_dict["__expires_at"] = math.floor(time.time() + out_dict["expires_in"])
 
-            try:
-                with open(self._token_file, "w") as tfile:
-                    json.dump(out_dict,tfile)
-            except IOError as e:
-                self._logger.debug("could not write to token file")
-                raise e
+        try:
+            with open(self._token_file, "w") as tfile:
+                json.dump(out_dict,tfile)
+        except IOError as e:
+            self._logger.debug("could not write to token file")
+            raise e
     ###########################
 
-    def setup(self):
-        """load client id and secret"""
-
-        print("setup")
-        print(__name__)
-        self._logger.info("setting up...")
-        self.get_client_keys()
-        self.setup_oauth2_session()
+    def get_resource(self, endpoint_url):
+        """try to get data"""
+        response = self._oauth2_session.get(endpoint_url)
+        return response
     ###########################
 
     def get_authorization_code(self) -> Tuple[str, str]:
@@ -232,8 +250,7 @@ class FitbitAuthenticator(object):
             state=acode_state[1],
             client_secret=self._oauth2_client_key)
         # save this
-        with open(self._token_file,"w") as tfile:
-            json.dump(t_dict,tfile)
+        self.save_tokens(tdict)
 
         return t_dict
 # {"errors":[{"errorType":"invalid_client","message":"Invalid authorization header format. The client id was not provided in proper format inside Authorization Header. Received authorization header = Basic MjJCWUs5Og==,  received client encoded id = null. Visit https://dev.fitbit.com/docs/oauth2 for more information on the Fitbit Web API authorization process."}],"success":false}.

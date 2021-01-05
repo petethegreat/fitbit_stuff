@@ -23,8 +23,35 @@ def do_stuff():
 
     ft = FitbitAuthenticator()
     ft.setup()
-    acode_state = ft.get_authorization_code()
-    td = ft.get_access_refresh_token(acode_state)
+    activity_root = "https://api.fitbit.com/1/user/{user_id}/activities/date/{date}.json"
+
+
+    # try activit
+    logger.debug("getting activity data")
+    user_id = "7NPJ74"
+
+    url = activity_root.format(user_id=user_id, date="2021-01-04")
+
+    response = ft.get_resource(url)
+    print(response.json())
+
+    activities = [
+        "activities/tracker/activityCalories",
+        "activities/tracker/steps",
+        "activities/tracker/distance"]
+    time_series_root = "https://api.fitbit.com/1/user/{user_id}/{activity}/date/{start_date}/{end_date}.json"
+    start_date = "2020-12-01"
+    end_date = "2020-12-31"
+    for ac in activities:
+        url = time_series_root.format(
+            user_id=user_id,
+            activity=ac,
+            start_date=start_date,
+            end_date=end_date)
+        response = ft.get_resource(url)
+        print(ac)
+        print(response.json())
+
 
 
 if __name__ == "__main__":

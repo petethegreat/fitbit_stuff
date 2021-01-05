@@ -27,7 +27,7 @@ def setup_app(route, shutdown_route):
             acode_state = (the_auth_code, the_state)
             logger.debug("auth code parsed")
             shutdown()
-            return f"the auth code = \"{the_auth_code}\""
+            return f"Authorization code retrieved, you may close this window."
         else:
             logger.debug("auth code not retrieved")
             shutdown()
