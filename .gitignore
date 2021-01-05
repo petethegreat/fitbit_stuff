@@ -7,3 +7,4 @@ venv**/
 setup_env.sh
 **/__pycache__
 .pylint
+data**/
