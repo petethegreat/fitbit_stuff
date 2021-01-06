@@ -75,6 +75,10 @@ class FitbitAuthenticator(object):
             acode = self.get_authorization_code()
             token = self.get_access_refresh_token(acode)
 
+        # if self._tokens.get("expires_in") < 10:
+        #     self._oauth2_session.refresh_token(_fitbit_oauth2_token_url)
+
+
     ###########################
 
     def setup_oauth2_session(self):
@@ -87,6 +91,7 @@ class FitbitAuthenticator(object):
             scope=scope,
             redirect_uri=self._oauth2_callback_uri,
             token_updater=self.save_tokens,
+            auto_refresh_url=self._fitbit_oauth2_token_url,
             token=self._tokens
             )
 
@@ -250,7 +255,7 @@ class FitbitAuthenticator(object):
             state=acode_state[1],
             client_secret=self._oauth2_client_key)
         # save this
-        self.save_tokens(tdict)
+        self.save_tokens(t_dict)
 
         return t_dict
 # {"errors":[{"errorType":"invalid_client","message":"Invalid authorization header format. The client id was not provided in proper format inside Authorization Header. Received authorization header = Basic MjJCWUs5Og==,  received client encoded id = null. Visit https://dev.fitbit.com/docs/oauth2 for more information on the Fitbit Web API authorization process."}],"success":false}.
