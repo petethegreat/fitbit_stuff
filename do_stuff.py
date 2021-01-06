@@ -26,7 +26,7 @@ def do_stuff():
     ft.setup()
 
     dl = DataDownloader(ft)
-    dl.get_heartrate("2021-01-01","2020-01-02")
+    dl.get_heartrate("2021-01-01","2021-01-02")
 
 
 
