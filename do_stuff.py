@@ -25,8 +25,9 @@ def do_stuff():
     ft = FitbitAuthenticator()
     ft.setup()
 
-    dl = DataDownloader(ft)
-    dl.get_heartrate("2021-01-01","2021-01-02")
+    dl = DataDownloader(ft, "heartrate",end_date="2021-01-05")
+    dl.download_data()
+    # dl.get_heartrate("2021-01-01")
 
 
 
