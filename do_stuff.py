@@ -3,7 +3,7 @@ import logging
 
 
 from fitbit_stuff.fitbit_authenticator import FitbitAuthenticator
-from fitbit_stuff.data_downloader import DataDownloader
+from fitbit_stuff.data_downloader import HeartRateTSDownloader, SleepDataDownloader
 
 def do_stuff():
     # logging - https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook
@@ -25,8 +25,10 @@ def do_stuff():
     ft = FitbitAuthenticator()
     ft.setup()
 
-    dl = DataDownloader(ft, "heartrate",end_date="2021-01-05")
-    dl.download_data()
+    hr_dl = HeartRateTSDownloader(ft, "heartrate",start_date="2021-01-01", end_date="2021-03-26")
+    hr_dl.download_data()
+    sleep_dl = SleepDataDownloader(ft, "sleep",start_date="2021-01-01", end_date="2021-03-26")
+    sleep_dl.download_data()
     # dl.get_heartrate("2021-01-01")
 
 
