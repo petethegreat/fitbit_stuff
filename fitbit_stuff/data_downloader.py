@@ -10,7 +10,7 @@ import pandas as pd
 #  implement it for heartrate
 
 class DataDownloaderTS(object):
-    def __init__(self,authenticator, name, start_date = "2021-01-01", data_path="./data", **kwargs):
+    def __init__(self, authenticator, name, start_date = "2021-01-01", data_path="./data", **kwargs):
         self._authenticator = authenticator
         self.start_date = start_date
         self.end_date = kwargs.get("end_date",None)
@@ -21,6 +21,8 @@ class DataDownloaderTS(object):
 
 
     def download_data(self):
+        print(self.data_path)
+        print(self.name)
         data_dir = os.path.join(self.data_path, self.name)
 
         if not os.path.exists(data_dir):
@@ -67,29 +69,30 @@ class DataDownloaderTS(object):
 
 class DataDownloader(DataDownloaderTS):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
+        super().__init__(*args, **kwargs)
 
     def download_data(self):
         data_dir = os.path.join(self.data_path, self.name)
+        print(data_dir)
 
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
 
-        start_dt = datetime.datetime.strptime(self.start_date,"%Y-%m-%d")
-        end_dt = datetime.datetime.strptime(self.end_date,"%Y-%m-%d") if self.end_date \
-            else datetime.datetime.now() +datetime.timedelta(days=-1)
+        # start_dt = datetime.datetime.strptime(self.start_date,"%Y-%m-%d")
+        # end_dt = datetime.datetime.strptime(self.end_date,"%Y-%m-%d") if self.end_date \
+        #     else (datetime.datetime.now() +datetime.timedelta(days=-1))
 
-        n_days = (end_dt - start_dt).days
+        # n_days = (end_dt - start_dt).days
 
-        filename = os.path.join(data_dir, f"{self.name}_{start_dt}_{end_dt}.csv")
+        filename = os.path.join(data_dir, f"{self.name}_{self.start_date}_{self.end_date}.csv")
 
-        data = self.get_data_json(start_date,end_date)
-        self.json_to_csv(data,os.path.join(data_dir,filename))
+        data = self.get_data_json(self.start_date,self.end_date)
+        self.json_to_csv(data,filename)
     ###########################
 
 class HeartRateTSDownloader(DataDownloaderTS):
-    def __init__(self,*args,**kwargs):
-        super().__init__(args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def get_data_json(self, date):
         "retrieve data for heartrate in this range"
@@ -116,7 +119,7 @@ class HeartRateTSDownloader(DataDownloaderTS):
 
 class SleepDataDownloader(DataDownloader):
     def __init__(self,*args,**kwargs):
-        super().__init__(args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_data_json(self, start_date, end_date):
         "retrieve data for heartrate in this range"
@@ -126,25 +129,27 @@ class SleepDataDownloader(DataDownloader):
 
         response = self._authenticator.get_resource(sleep_url)
         data = response.json()
+        print(response.text)
 
         return data
     ###########################
 
     def json_to_csv(self, data, filepath):
+        print(data.keys())
 
         records = [ {
             "date" : x["dateOfSleep"],
             "duration_total_ms": x["duration"],
             "efficiency": x["efficiency"],
             "isMainSleep": x["isMainSleep"],
-            "light_periods": x["levels"]["summary"]["light"]["count"],
-            "light_minutes": x["levels"]["summary"]["light"]["minutes"],
-            "deep_periods": x["levels"]["summary"]["deep"]["count"],
-            "deep_minutes": x["levels"]["summary"]["deep"]["minutes"],
-            "rem_periods": x["levels"]["summary"]["rem"]["count"],
-            "rem_minutes": x["levels"]["summary"]["rem"]["minutes"],
-            "wake_periods": x["levels"]["summary"]["wake"]["count"],
-            "wake_minutes": x["levels"]["summary"]["wake"]["minutes"]}
+            "light_periods": x["levels"]["summary"]["light"]["count"] if x["levels"]["summary"].get("light") else 0,
+            "light_minutes": x["levels"]["summary"]["light"]["minutes"] if x["levels"]["summary"].get("light") else 0,
+            "deep_periods": x["levels"]["summary"]["deep"]["count"] if x["levels"]["summary"].get("deep") else 0,
+            "deep_minutes": x["levels"]["summary"]["deep"]["minutes"] if x["levels"]["summary"].get("deep") else 0,
+            "rem_periods": x["levels"]["summary"]["rem"]["count"] if x["levels"]["summary"].get("rem") else 0,
+            "rem_minutes": x["levels"]["summary"]["rem"]["minutes"] if x["levels"]["summary"].get("rem") else 0,
+            "wake_periods": x["levels"]["summary"]["wake"]["count"] if x["levels"]["summary"].get("wake") else 0,
+            "wake_minutes": x["levels"]["summary"]["wake"]["minutes"] if x["levels"]["summary"].get("wake") else 0}
             for x in data["sleep"] ]
         df = pd.DataFrame.from_records(records)
 

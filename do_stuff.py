@@ -25,9 +25,9 @@ def do_stuff():
     ft = FitbitAuthenticator()
     ft.setup()
 
-    hr_dl = HeartRateTSDownloader(ft, "heartrate",start_date="2021-01-01", end_date="2021-03-26")
+    hr_dl = HeartRateTSDownloader(ft, "heartrate", start_date="2021-01-01", end_date="2021-03-26")
     hr_dl.download_data()
-    sleep_dl = SleepDataDownloader(ft, "sleep",start_date="2021-01-01", end_date="2021-03-26")
+    sleep_dl = SleepDataDownloader(ft, "sleep", start_date="2021-01-01", end_date="2021-03-26")
     sleep_dl.download_data()
     # dl.get_heartrate("2021-01-01")
 
