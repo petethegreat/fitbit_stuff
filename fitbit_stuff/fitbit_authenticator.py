@@ -65,9 +65,9 @@ class FitbitAuthenticator(object):
     def setup(self):
         """load keys and tokens, authenticate if needed"""
 
-        print("setup")
-        print(__name__)
         self._logger.info("setting up...")
+        self._logger.debug("setup")
+        self._logger.debug(__name__)
         self.load_tokens()
 
         self.get_client_keys()
@@ -109,7 +109,7 @@ class FitbitAuthenticator(object):
         self._logger.debug(msg)
         msg = f"current time: {time.time()}"
         self._logger.debug(msg)
-        print(self._tokens)
+        # print(self._tokens)
 
 #         client = OAuth2Session(client_id, token=token, auto_refresh_url=refresh_url,
 # ...     auto_refresh_kwargs=extra, token_updater=token_saver)
@@ -128,7 +128,7 @@ class FitbitAuthenticator(object):
             ValueError is raised if either environment variable cannot be found
 
         """
-        print("getting client keys")
+        self._logger.debug("getting client keys")
         self._oauth2_client_id = os.environ.get(self._client_id_var,None)
         self._oauth2_client_secret = os.environ.get(self._client_secret_var,None)
         self.validate_client_keys()

@@ -12,7 +12,7 @@ def do_stuff():
     fh = logging.FileHandler("./fitbit.log", mode="w")
     fh.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(logging.WARNING)
     logger.addHandler(fh)
     logger.addHandler(ch)
     formatter = logging.Formatter('{asctime} - {name} - {message} ', style='{')
