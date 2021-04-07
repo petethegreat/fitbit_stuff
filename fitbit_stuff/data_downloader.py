@@ -129,7 +129,7 @@ class SleepDataDownloader(DataDownloader):
 
         response = self._authenticator.get_resource(sleep_url)
         data = response.json()
-        print(response.text)
+        # print(response.text)
 
         return data
     ###########################
